@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+</head>
+
+<body style="background:black;color:white;font-family:Arial">
+
+<h1>Admin Dashboard</h1>
+
+<input id="key" placeholder="Enter Admin Key">
+<button onclick="load()">Login</button>
+
+<div id="data"></div>
+
+<script>
+function load(){
+
+  fetch("/api/results", {
+    headers: { authorization: document.getElementById("key").value }
+  })
+  .then(res => res.json())
+  .then(data => {
+
+    let out = "";
+
+    data.forEach((d,i)=>{
+      out += `
+        <div style="border:1px solid white;margin:10px;padding:10px;">
+          ${i+1}. ${d.name} - Score: ${d.score}
+        </div>
+      `;
+    });
+
+    document.getElementById("data").innerHTML = out;
+
+  })
+  .catch(()=> alert("Unauthorized"));
+}
+</script>
+
+</body>
+</html>

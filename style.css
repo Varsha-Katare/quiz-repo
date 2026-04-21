@@ -1,0 +1,23 @@
+body {
+  font-family: Arial;
+  background: #111;
+  color: white;
+  text-align: center;
+}
+
+.container {
+  margin: 50px;
+}
+
+button {
+  padding: 10px 20px;
+  background: orange;
+  border: none;
+  cursor: pointer;
+}
+
+input, textarea, select {
+  width: 60%;
+  margin: 10px;
+  padding: 8px;
+}

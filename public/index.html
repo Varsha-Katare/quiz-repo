@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CODE GAUNTLET</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0a0f1a;
+  color:white;
+}
+
+.screen{
+  display:none;
+  height:100vh;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+}
+
+.active{display:flex;}
+
+.title{
+  font-size:3rem;
+  font-weight:bold;
+  color:#00e5ff;
+}
+
+.box{
+  width:750px;
+  padding:20px;
+  background:rgba(255,255,255,0.06);
+  border-radius:12px;
+}
+
+.option{
+  padding:12px;
+  margin:8px 0;
+  border:1px solid #444;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.option:hover{
+  background:#00e5ff33;
+}
+
+.option.selected{
+  background:#00e5ff66;
+}
+
+button{
+  padding:10px 25px;
+  border:none;
+  background:#00e5ff55;
+  color:white;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+textarea{
+  width:100%;
+  height:120px;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ENTER PAGE -->
+<div class="screen active" id="enter">
+  <div class="title">ENTER THE ARENA</div>
+  <input id="name" placeholder="Enter Name"><br><br>
+  <button onclick="start()">START</button>
+</div>
+
+<!-- QUIZ PAGE -->
+<div class="screen" id="quiz">
+  <div class="box">
+
+    <h2 id="qno"></h2>
+    <p id="question"></p>
+
+    <textarea id="textBox"></textarea>
+
+    <div id="options"></div>
+
+    <button onclick="next()">NEXT</button>
+  </div>
+</div>
+
+<!-- END PAGE -->
+<div class="screen" id="end">
+  <div class="title">EXAM COMPLETED</div>
+  <h2 id="score"></h2>
+</div>
+
+<script>
+
+let i = 0;
+let score = 0;
+let selected = null;
+let answers = {};
+let name = "";
+
+/* MARKS SYSTEM */
+function marks(i){
+  if(i < 3) return 2;     // output prediction
+  if(i < 6) return 3;     // debugging + logic
+  return 5;              // technical
+}
+
+/* QUESTIONS */
+const q = [
+
+/* OUTPUT PREDICTION (3) */
+{type:"text", q:"Predict output: tricky variable increment case"},
+{type:"text", q:"Predict output: recursion behavior in function"},
+{type:"text", q:"Predict output: list mutation behavior"},
+
+/* DEBUGGING (3) */
+{type:"text", q:"Find and fix error in given program (C style syntax issue)"},
+{type:"text", q:"Fix indentation and loop error in program"},
+{type:"text", q:"Correct pointer / memory misuse issue"},
+
+/* LOGICAL MCQ (2) */
+{
+type:"mcq",
+q:"If 2+3=10, 3+4=21, 4+5=?",
+opt:["30","35","40","45"],
+ans:2
+},
+{
+type:"mcq",
+q:"Odd one out",
+opt:["CPU","RAM","HTML","GPU"],
+ans:2
+},
+
+/* TECHNICAL MCQ (2) */
+{
+type:"mcq",
+q:"Which is used for memory management?",
+opt:["Compiler","RAM","Loop","HTML"],
+ans:1
+},
+{
+type:"mcq",
+q:"Which is backend language?",
+opt:["HTML","CSS","Python","Design"],
+ans:2
+}
+
+];
+
+/* START */
+function start(){
+  name = document.getElementById("name").value;
+
+  document.getElementById("enter").classList.remove("active");
+  document.getElementById("quiz").classList.add("active");
+
+  load();
+}
+
+/* LOAD QUESTION */
+function load(){
+
+  selected = null;
+
+  let data = q[i];
+
+  document.getElementById("qno").innerText = "Question " + (i+1);
+  document.getElementById("question").innerText = data.q;
+
+  document.getElementById("textBox").value = "";
+
+  let box = document.getElementById("options");
+  box.innerHTML = "";
+
+  if(data.type === "mcq"){
+
+    document.getElementById("textBox").style.display = "none";
+
+    data.opt.forEach((o,idx)=>{
+      let div = document.createElement("div");
+      div.className = "option";
+      div.innerText = o;
+
+      div.onclick = ()=>{
+        selected = idx;
+
+        document.querySelectorAll(".option")
+        .forEach(x=>x.classList.remove("selected"));
+
+        div.classList.add("selected");
+      };
+
+      box.appendChild(div);
+    });
+
+  } else {
+    document.getElementById("textBox").style.display = "block";
+  }
+}
+
+/* NEXT BUTTON */
+function next(){
+
+  let data = q[i];
+
+  if(data.type === "mcq"){
+    answers[i] = selected;
+
+    if(selected === data.ans){
+      score += marks(i);
+    }
+
+  } else {
+    answers[i] = document.getElementById("textBox").value;
+  }
+
+  i++;
+
+  if(i >= q.length){
+    finish();
+    return;
+  }
+
+  load();
+}
+
+/* FINISH */
+function finish(){
+
+  document.getElementById("quiz").classList.remove("active");
+  document.getElementById("end").classList.add("active");
+
+  document.getElementById("score").innerText =
+    "Your Score: " + score;
+}
+
+</script>
+
+</body>
+</html>
